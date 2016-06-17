@@ -4,17 +4,20 @@ public class Enemy extends Entity{
 
 		private double radius;
 
+		private double angle;
+		private double angleV;
+
 		private double explosion_start;
 		private double explosion_end;
 
 		private long nextShot;
 
-		private int deathCounter;
+		
 
-		public Player(double x,double y,double radius){
+		public Player(double x,double y){
 			setX(x);
 			setY(y);
-			this.radius = radius;
+			this.radius = 9;
 			initialize();
 
 		}
@@ -24,7 +27,8 @@ public class Enemy extends Entity{
 			explosion_end = 0;
 			explosion_start = 0;
 			v = 0;
-			deathCounter = 0;
+			angle = 0;
+			angleV = 0;
 			setState(INACTIVE);
 		}
 
@@ -42,15 +46,17 @@ public class Enemy extends Entity{
 		}
 
 		public void explode(long currentTime){
-			if(getState() != Entity.EXPLODING)
-				deathCounter++;
 			setState(Entity.EXPLODING);
 			explosion_start = currentTime;
-			explosion_end = currentTime + 2000;
+			explosion_end = currentTime + 500;
 		}
 
 		public boolean isDoneExploding(long currentTime){
 			return (currentTime > explosion_end);
+		}
+
+		public void setNextShoot(lont nextShot){
+			this.nextShot = nextShot;
 		}
 
 		public boolean canShoot(long currentTime){
@@ -60,8 +66,19 @@ public class Enemy extends Entity{
 		public double getSpeed(){
 			return v;
 		}
-	
-		
+		public double getAngle(){
+			return angle;
+		}
+		public double getAngleV(){
+			return angleV;
+		}
+		public void setAngle(double angle){
+			this.angle = angle;
+		}
+		public void setAngleV(double anglev){
+			this.angleV = angleV;
+		}
+
 		public void setSpeed(double v){
 			this.v = v;
 		}
