@@ -14,7 +14,7 @@ public class Enemy extends Entity{
 
 		
 
-		public Player(double x,double y){
+		public Enemy(double x,double y){
 			setX(x);
 			setY(y);
 			this.radius = 9;
@@ -55,7 +55,7 @@ public class Enemy extends Entity{
 			return (currentTime > explosion_end);
 		}
 
-		public void setNextShoot(lont nextShot){
+		public void setNextShoot(long nextShot){
 			this.nextShot = nextShot;
 		}
 
@@ -88,9 +88,6 @@ public class Enemy extends Entity{
 		}
 		public void setRadius(double radius){
 			this.radius = radius;
-		}
-		public int getDeaths(){
-			return deathCounter;
 		}
 		public void setNextShot(long nextShot){
 			this.nextShot = nextShot;

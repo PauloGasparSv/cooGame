@@ -33,6 +33,19 @@ public class Main {
 		return i;
 	}
 	
+
+	public static Entity findFreeIndex(Entity [] e){
+
+		int i;
+		
+		for(i = 0; i < e.length; i++){
+			
+			if(e[i].getState() == Entity.INACTIVE) break;
+		}
+		
+		return e[i];
+	}
+
 	/* Encontra e devolve o conjunto de índices (a quantidade */
 	/* de índices é defnida através do parâmetro "amount") do */
 	/* array, referentes a posições "inativas".               */ 
@@ -308,9 +321,9 @@ public class Main {
 			
 			/* inimigos tipo 1 */
 			
-			for(int i = 0; i < enemies[i].length; i++){
+			for(int i = 0; i < enemies.length; i++){
 				
-				if(enemies[i].getState() == Entity.EXPLODING && enemies[i].isDoneExploding()){		
+				if(enemies[i].getState() == Entity.EXPLODING && enemies[i].isDoneExploding(currentTime)){		
 					enemies[i].setState(Entity.INACTIVE);
 				}
 				
@@ -324,11 +337,11 @@ public class Main {
 					}
 					else {
 					
-						enemies[i].setX(enemies[i].getX() + enemies[i].getSpeed() * Math.cos(enemies[i].getAngle()) * delta;
-						enemies[i].setY(enemies[i].getY() + enemies[i].getSpeed() * Math.sin(enemies[i].getAngle()) * delta * (-1.0);
-						enemies[i].setAngle(enemies[i].getAngle() + enemies[i].getAngleV() * delta;
+						enemies[i].setX(enemies[i].getX() + enemies[i].getSpeed() * Math.cos(enemies[i].getAngle()) * delta);
+						enemies[i].setY(enemies[i].getY() + enemies[i].getSpeed() * Math.sin(enemies[i].getAngle()) * delta * (-1.0));
+						enemies[i].setAngle(enemies[i].getAngle() + enemies[i].getAngleV() * delta);
 						
-						if(enemies[i].canShoot() && enemies[i].getY() < player.getY()){
+						if(enemies[i].canShoot(currentTime) && enemies[i].getY() < player.getY()){
 																							
 							int free = findFreeIndex(e_projectile_states);
 							
@@ -428,22 +441,19 @@ public class Main {
 			
 			if(currentTime > nextEnemy1){
 				
-				int free = findFreeIndex(enemy1_states);
-
 				int indice = -1;
 				for(int i  = 0;i < enemies.length; i++)
 					if(enemies[i].getState() == Entity.INACTIVE)
 						indice = i;
 								
 				if(indice != -1){
-					
-					eneies[i].setX(= Math.random() * (GameLib.WIDTH - 20.0) + 10.0);
-					enemy1_Y[free] = -10.0;
-					enemy1_V[free] = 0.20 + Math.random() * 0.15;
-					enemy1_angle[free] = 3 * Math.PI / 2;
-					enemy1_RV[free] = 0.0;
-					enemy1_states[free] = ACTIVE;
-					enemy1_nextShoot[free] = currentTime + 500;
+					enemies[indice].setX (Math.random() * (GameLib.WIDTH - 20.0) + 10.0);
+					enemies[indice].setY(-10.0);
+					enemies[indice].setSpeed(0.20 + Math.random() * 0.15);
+					enemies[indice].setAngle(3 * Math.PI / 2);
+					enemies[indice].setAngleV(0.0);
+					enemies[indice].setState(Entity.ACTIVE);
+					enemies[indice].setNextShot(currentTime + 500);
 					nextEnemy1 = currentTime + 500;
 				}
 			}
@@ -589,18 +599,16 @@ public class Main {
 			
 			/* desenhando inimigos (tipo 1) */
 			
-			for(int i = 0; i < enemy1_states.length; i++){
+			for(int i = 0; i < enemies.length; i++){
 				
-				if(enemy1_states[i] == EXPLODING){
-					
-					double alpha = (currentTime - enemy1_explosion_start[i]) / (enemy1_explosion_end[i] - enemy1_explosion_start[i]);
-					GameLib.drawExplosion(enemy1_X[i], enemy1_Y[i], alpha);
+				if(enemies[i].getState() == Entity.EXPLODING){
+					GameLib.drawExplosion(enemies[i].getX(), enemies[i].getY(), enemies[i].getAlpha(currentTime));
 				}
 				
-				if(enemy1_states[i] == ACTIVE){
+				if(enemies[i].getState() == Entity.ACTIVE){
 			
 					GameLib.setColor(Color.CYAN);
-					GameLib.drawCircle(enemy1_X[i], enemy1_Y[i], enemy1_radius);
+					GameLib.drawCircle(enemies[i].getX(), enemies[i].getY(), enemies[i].getRadius());
 				}
 			}
 			
