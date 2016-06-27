@@ -116,11 +116,15 @@ public class Main {
 		
 		Background background = new Background();
 
+		long nextEnemy2 = currentTime + 3000;
+		double enemy2_spawnX = 10;
+		int enemy2_count = 0;
+
 		/* inicializações */
 		
 		for(int i = 0; i < e_projectile_states.length; i++) e_projectile_states[i] = INACTIVE;
 		for(int i = 0; i < enemies.length; i++) enemies[i] = new Enemy(0,0);
-		for(int i = 0; i < enemies2.length; i++) enemies[i] = new Enemy(0,0);
+		for(int i = 0; i < enemies2.length; i++) enemies2[i] = new Enemy2(0,0);
 	
 		/* iniciado interface gráfica */
 		
@@ -310,7 +314,7 @@ public class Main {
 				
 				if(enemies2[i].getState() == Entity.EXPLODING){
 					
-					if(enemies2[i].isDoneExploding()){
+					if(enemies2[i].isDoneExploding(currentTime)){
 						
 						enemies2[i].setState(Entity.INACTIVE);
 					}
@@ -369,8 +373,8 @@ public class Main {
 									double vx = Math.cos(a);
 									double vy = Math.sin(a);
 										
-									e_projectile_X[free] = enemy2_X[i];
-									e_projectile_Y[free] = enemy2_Y[i];
+									e_projectile_X[free] = enemies2[i].getX();
+									e_projectile_Y[free] = enemies2[i].getY();
 									e_projectile_VX[free] = vx * 0.30;
 									e_projectile_VY[free] = vy * 0.30;
 									e_projectile_states[free] = 1;
