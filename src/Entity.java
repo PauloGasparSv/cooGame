@@ -9,8 +9,8 @@ public abstract class Entity{
 		private double x,y;
 		private int state;
 	
-		public abstract void draw();
-		public abstract void update();
+		public abstract void draw(long currentTime);
+		public abstract void update(long currentTime,long delta);
 
 		public int getState(){
 			return state;

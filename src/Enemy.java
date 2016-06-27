@@ -1,3 +1,4 @@
+import java.awt.Color;
 
 public class Enemy extends Entity{	
 		private double v;
@@ -33,20 +34,28 @@ public class Enemy extends Entity{
 		}
 
 
-		public void update(){
+		public void update(long currentTime,long delta){
 
 
 
 		}
 
-		public void draw(){
-
+		public void draw(long currentTime){
+			if(getState() == EXPLODING){
+					GameLib.drawExplosion(getX(), getY(), getAlpha(currentTime));
+				}
+				
+				if(getState() == ACTIVE){
+			
+					GameLib.setColor(Color.CYAN);
+					GameLib.drawCircle(getX(), getY(), getRadius());
+				}
 
 
 		}
 
 		public void explode(long currentTime){
-			setState(Entity.EXPLODING);
+			setState(EXPLODING);
 			explosion_start = currentTime;
 			explosion_end = currentTime + 500;
 		}

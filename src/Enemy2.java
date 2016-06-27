@@ -1,22 +1,24 @@
-
 import java.awt.Color;
 
-public class Player extends Entity{	
-		private double vx,vy;
+public class Enemy2 extends Entity{	
+		private double v;
 
 		private double radius;
+
+		private double angle;
+		private double angleV;
 
 		private double explosion_start;
 		private double explosion_end;
 
 		private long nextShot;
 
-		private int deathCounter;
+		
 
-		public Player(double x,double y,double radius){
+		public Enemy2(double x,double y){
 			setX(x);
 			setY(y);
-			this.radius = radius;
+			this.radius = 12;
 			initialize();
 
 		}
@@ -25,72 +27,70 @@ public class Player extends Entity{
 			nextShot = System.currentTimeMillis();
 			explosion_end = 0;
 			explosion_start = 0;
-			vx = 0;
-			vy = 0;
-			deathCounter = 0;
-			setState(ACTIVE);
+			v = 0;
+			angle = 0;
+			angleV = 0;
+			setState(INACTIVE);
 		}
 
 
 		public void update(long currentTime,long delta){
 
-			if(getX()< 0.0) setX(0.0);
-			if(getX() >= GameLib.WIDTH) setX(GameLib.WIDTH - 1);
-			if(getY() < 25.0) setY(25.0);
-			if(getY() >= GameLib.HEIGHT) setY(GameLib.HEIGHT - 1);
 
-			if(getState() == Entity.EXPLODING){
-			
-				if(isDoneExploding(currentTime))	
-					setState(Entity.ACTIVE);
-				
-			}
 
 		}
 
 		public void draw(long currentTime){
-
 			if(getState() == EXPLODING){
+					
 				double alpha = getAlpha(currentTime);
 				GameLib.drawExplosion(getX(), getY(), alpha);
 			}
-			else{
 				
-				GameLib.setColor(Color.WHITE);
-				GameLib.drawPlayer(getX(), getY(), getRadius());
+			if(getState() == ACTIVE){
+			
+				GameLib.setColor(Color.MAGENTA);
+				GameLib.drawDiamond(getX(), getY(), getRadius());
 			}
-				
 
 		}
 
 		public void explode(long currentTime){
-			if(getState() != Entity.EXPLODING)
-				deathCounter++;
-			setState(Entity.EXPLODING);
+			setState(EXPLODING);
 			explosion_start = currentTime;
-			explosion_end = currentTime + 2000;
+			explosion_end = currentTime + 500;
 		}
 
 		public boolean isDoneExploding(long currentTime){
 			return (currentTime > explosion_end);
 		}
 
+		public void setNextShoot(long nextShot){
+			this.nextShot = nextShot;
+		}
+
 		public boolean canShoot(long currentTime){
 			return (currentTime > nextShot);
 		}
 
-		public double getSpeedX(){
-			return vx;
+		public double getSpeed(){
+			return v;
 		}
-		public double getSpeedY(){
-			return vy;
+		public double getAngle(){
+			return angle;
 		}
-		
-		public void setSpeedX(double vx){
-			this.vx = vx;
+		public double getAngleV(){
+			return angleV;
 		}
-		public void setSpeedY(double vy){
-			this.vy = vy;
+		public void setAngle(double angle){
+			this.angle = angle;
+		}
+		public void setAngleV(double anglev){
+			this.angleV = angleV;
+		}
+
+		public void setSpeed(double v){
+			this.v = v;
 		}
 
 		public double getRadius(){
@@ -98,9 +98,6 @@ public class Player extends Entity{
 		}
 		public void setRadius(double radius){
 			this.radius = radius;
-		}
-		public int getDeaths(){
-			return deathCounter;
 		}
 		public void setNextShot(long nextShot){
 			this.nextShot = nextShot;
