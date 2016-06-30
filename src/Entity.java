@@ -31,4 +31,33 @@ public abstract class Entity{
 			return y;
 		}
 
+		public static int findFreeIndex(int [] stateArray){
+			int i;
+			for( i = 0; i < stateArray.length; i++){
+				if(stateArray[i] == INACTIVE) break;
+			}
+		
+			return i;
+		}
+
+		public static int [] findFreeIndex(int [] stateArray, int amount){
+
+			int i, k;
+			int [] freeArray = { stateArray.length, stateArray.length, stateArray.length };
+		
+			for(i = 0, k = 0; i < stateArray.length && k < amount; i++){
+				
+				if(stateArray[i] == INACTIVE) { 
+				
+					freeArray[k] = i; 
+					k++;
+				}
+			}
+		
+			return freeArray;
+		}
+	
+
+
+
 }

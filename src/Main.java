@@ -33,19 +33,6 @@ public class Main {
 		return i;
 	}
 	
-
-	public static Entity findFreeIndex(Entity [] e){
-
-		int i;
-		
-		for(i = 0; i < e.length; i++){
-			
-			if(e[i].getState() == Entity.INACTIVE) break;
-		}
-		
-		return e[i];
-	}
-
 	/* Encontra e devolve o conjunto de índices (a quantidade */
 	/* de índices é defnida através do parâmetro "amount") do */
 	/* array, referentes a posições "inativas".               */ 
@@ -123,8 +110,8 @@ public class Main {
 		/* inicializações */
 		
 		for(int i = 0; i < e_projectile_states.length; i++) e_projectile_states[i] = INACTIVE;
-		for(int i = 0; i < enemies.length; i++) enemies[i] = new Enemy(0,0);
-		for(int i = 0; i < enemies2.length; i++) enemies2[i] = new Enemy2(0,0);
+		for(int i = 0; i < enemies.length; i++) enemies[i] = new Enemy(0,0,player);
+		for(int i = 0; i < enemies2.length; i++) enemies2[i] = new Enemy2(0,0,player);
 	
 		/* iniciado interface gráfica */
 		
@@ -246,7 +233,7 @@ public class Main {
 			/* projeteis (player) */
 			
 			for(Projectile p:proj)
-				p.update(delta);
+				p.update(currentTime,delta);
 			
 			/* projeteis (inimigos) */
 			
@@ -271,10 +258,7 @@ public class Main {
 			
 			for(int i = 0; i < enemies.length; i++){
 				
-				if(enemies[i].getState() == Entity.EXPLODING && enemies[i].isDoneExploding(currentTime)){		
-					enemies[i].setState(Entity.INACTIVE);
-				}
-				
+				enemies[i].update(currentTime,delta);
 				
 				if(enemies[i].getState() == Entity.ACTIVE){
 					
@@ -312,13 +296,7 @@ public class Main {
 			
 			for(int i = 0; i < enemies2.length; i++){
 				
-				if(enemies2[i].getState() == Entity.EXPLODING){
-					
-					if(enemies2[i].isDoneExploding(currentTime)){
-						
-						enemies2[i].setState(Entity.INACTIVE);
-					}
-				}
+				enemies2[i].update(currentTime,delta);
 				
 				if(enemies2[i].getState()  == Entity.ACTIVE){
 					
@@ -503,7 +481,7 @@ public class Main {
 			/* deenhando projeteis (player) */
 			
 			for(Projectile p:proj)
-				p.draw();
+				p.draw(currentTime);
 			
 			/* desenhando projeteis (inimigos) */
 		

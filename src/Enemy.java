@@ -13,13 +13,14 @@ public class Enemy extends Entity{
 
 		private long nextShot;
 
-		
+		private Player player;
 
-		public Enemy(double x,double y){
+		public Enemy(double x,double y,Player player){
 			setX(x);
 			setY(y);
 			this.radius = 9;
 			initialize();
+			this.player = player;
 
 		}
 
@@ -36,7 +37,10 @@ public class Enemy extends Entity{
 
 		public void update(long currentTime,long delta){
 
-
+			if(getState() == EXPLODING && isDoneExploding(currentTime)){		
+					setState(Entity.INACTIVE);
+			}
+				
 
 		}
 

@@ -1,27 +1,25 @@
 import java.awt.Color;
 
-public class Projectile{
+public class Projectile extends Entity{
 
-	private double x;
-	private double y;
 	private double vx;
 	private double vy;
 	
 	private int state;
 
 	public Projectile(){
-		state = Entity.INACTIVE;
+		state = INACTIVE;
 		vy = -1;
 	}
 
-	public void update(long delta){
+	public void update(long currentTime,long delta){
 
-		if(getState() == Entity.ACTIVE){
+		if(getState() == ACTIVE){
 			
 					/* verificando se projétil saiu da tela */
 			if(getY() < 0) {
 						
-				setState(Entity.INACTIVE);
+				setState(INACTIVE);
 			}
 			else {
 			
@@ -33,9 +31,9 @@ public class Projectile{
 	}
 
 
-	public void draw(){
+	public void draw(long currentTime){
 
-		if(getState() == Entity.ACTIVE){	
+		if(getState() == ACTIVE){	
 			GameLib.setColor(Color.GREEN);
 			GameLib.drawLine(getX(), getY() - 5, getX(), getY() + 5);
 			GameLib.drawLine(getX() - 1, getY()- 3, getX() - 1, getY() + 3);
@@ -48,12 +46,7 @@ public class Projectile{
 		return state;
 	}
 
-	public double getX(){
-		return x;
-	}
-	public double getY(){
-		return y;
-	}
+	
 	public double getSpeedX(){
 		return vx;
 	}
@@ -65,12 +58,6 @@ public class Projectile{
 		this.state = state;
 	}
 
-	public void setX(double x){
-		this.x = x;
-	}
-	public void setY(double y){
-		this.y = y;
-	}
 
 	public void setSpeedX(double vx){
 		this.vx = vx;
