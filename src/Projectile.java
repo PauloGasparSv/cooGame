@@ -17,7 +17,7 @@ public class Projectile extends Entity{
 		if(getState() == ACTIVE){
 			
 					/* verificando se projétil saiu da tela */
-			if(getY() < 0) {
+			if(getY() < -2 || getY() > GameLib.HEIGHT + 20) {
 						
 				setState(INACTIVE);
 			}

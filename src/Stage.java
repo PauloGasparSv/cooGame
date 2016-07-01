@@ -2,10 +2,6 @@ import java.awt.Color;
 
 public class Stage{
 	
-	public static final int INACTIVE = 0;
-	public static final int ACTIVE = 1;
-	public static final int EXPLODING = 2;
-	
 
 	public static int findFreeIndex(int [] stateArray){
 		
@@ -13,7 +9,7 @@ public class Stage{
 		
 		for(i = 0; i < stateArray.length; i++){
 			
-			if(stateArray[i] == INACTIVE) break;
+			if(stateArray[i] == Entity.INACTIVE) break;
 		}
 		
 		return i;
@@ -26,7 +22,24 @@ public class Stage{
 		
 		for(i = 0, k = 0; i < stateArray.length && k < amount; i++){
 				
-			if(stateArray[i] == INACTIVE) { 
+			if(stateArray[i] == Entity.INACTIVE) { 
+				
+				freeArray[k] = i; 
+				k++;
+			}
+		}
+		
+		return freeArray;
+	}
+
+	public static int [] findFreeIndex(Entity [] stateArray, int amount){
+
+		int i, k;
+		int [] freeArray = { stateArray.length, stateArray.length, stateArray.length };
+		
+		for(i = 0, k = 0; i < stateArray.length && k < amount; i++){
+				
+			if(stateArray[i].getState() == Entity.INACTIVE) { 
 				
 				freeArray[k] = i; 
 				k++;
@@ -72,12 +85,9 @@ public class Stage{
 		
 		/* variáveis dos projéteis lançados pelos inimigos (tanto tipo 1, quanto tipo 2) */
 		
-		int [] e_projectile_states = new int[200];				// estados
-		double [] e_projectile_X = new double[200];				// coordenadas x
-		double [] e_projectile_Y = new double[200];				// coordenadas y
-		double [] e_projectile_VX = new double[200];			// velocidade no eixo x
-		double [] e_projectile_VY = new double[200];			// velocidade no eixo y
-		double e_projectile_radius = 2.0;						// raio (tamanho dos projéteis inimigos)
+
+		Entity eproj[] = new DecoratorEnemyFire[200];
+		for(int i = 0;i < 200; i ++)eproj[i] = DecoratorEnemyFire(new Projectile(),player);
 		
 		/* estrelas que formam o fundo de primeiro plano */
 		
@@ -90,8 +100,6 @@ public class Stage{
 		int enemy2_count = 0;
 
 		/* inicializações */
-		
-		for(int i = 0; i < e_projectile_states.length; i++) e_projectile_states[i] = INACTIVE;
 		for(int i = 0; i < enemies.length; i++) enemies[i] = new Enemy(0,0,player);
 		for(int i = 0; i < enemies2.length; i++) enemies2[i] = new Enemy2(0,0,player);
 	
@@ -119,13 +127,13 @@ public class Stage{
 				
 				/* colisões player - projeteis (inimigo) */
 				
-				for(int i = 0; i < e_projectile_states.length; i++){
+				for(int i = 0; i < eproj.length; i++){
 					
-					double dx = e_projectile_X[i] - player.getX();
-					double dy = e_projectile_Y[i] - player.getY();
+					double dx = eproj[i].getProj.getX() - player.getX();
+					double dy = eproj[i].getProj.getY() - player.getY();
 					double dist = Math.sqrt(dx * dx + dy * dy);
 					
-					if(dist < (player.getRadius() + e_projectile_radius) * 0.8){
+					if(dist < (player.getRadius() + eproj[i].getRadius()) * 0.8){
 						player.explode(currentTime);
 					}
 				}
@@ -201,22 +209,9 @@ public class Stage{
 			
 			/* projeteis (inimigos) */
 			
-			for(int i = 0; i < e_projectile_states.length; i++){
-				
-				if(e_projectile_states[i] == ACTIVE){
-					
-					/* verificando se projétil saiu da tela */
-					if(e_projectile_Y[i] > GameLib.HEIGHT) {
-						
-						e_projectile_states[i] = INACTIVE;
-					}
-					else {
-					
-						e_projectile_X[i] += e_projectile_VX[i] * delta;
-						e_projectile_Y[i] += e_projectile_VY[i] * delta;
-					}
-				}
-			}
+			for(int i = 0; i < eproj.length; i++)
+				eproj[i].update(currentTime,delta);
+			
 			
 			/* inimigos tipo 1 */
 			
@@ -239,16 +234,19 @@ public class Stage{
 						
 						if(enemies[i].canShoot(currentTime) && enemies[i].getY() < player.getY()){
 																							
-							int free = findFreeIndex(e_projectile_states);
+							int free = 0;
+							for(free = 0; free <= eproj.length; free++){
+								if(free == eproj.length)break;
+								if(eproj[free].getState() == Entity.INACTIVE)break;
+							}
 							
-							if(free < e_projectile_states.length){
+							if(free < eproj.length){
 								
-								e_projectile_X[free] = enemies[i].getX();
-								e_projectile_Y[free] = enemies[i].getY();
-								e_projectile_VX[free] = Math.cos(enemies[i].getAngle()) * 0.45;
-								e_projectile_VY[free] = Math.sin(enemies[i].getAngle()) * 0.45 * (-1.0);
-								e_projectile_states[free] = 1;
-								
+								eproj[free].setX(enemies[i].getX());
+								eproj[free].setY(enemies[i].getY());
+								eproj[free].setSpeedX(Math.cos(enemies[i].getAngle()) * 0.45);
+								eproj[free].setSpeedY(Math.sin(enemies[i].getAngle()) * 0.45 * (-1.0));
+								eproj[free].setState(Entity.ACTIVE);
 								enemies[i].setNextShot((long) (currentTime + 200 + Math.random() * 500));
 							}
 						}
@@ -303,23 +301,23 @@ public class Stage{
 						if(shootNow){
 
 							double [] angles = { Math.PI/2 + Math.PI/8, Math.PI/2, Math.PI/2 - Math.PI/8 };
-							int [] freeArray = findFreeIndex(e_projectile_states, angles.length);
+							int [] freeArray = findFreeIndex(eproj, angles.length);
 
 							for(int k = 0; k < freeArray.length; k++){
 								
 								int free = freeArray[k];
 								
-								if(free < e_projectile_states.length){
+								if(free < eproj.length){
 									
 									double a = angles[k] + Math.random() * Math.PI/6 - Math.PI/12;
 									double vx = Math.cos(a);
 									double vy = Math.sin(a);
 										
-									e_projectile_X[free] = enemies2[i].getX();
-									e_projectile_Y[free] = enemies2[i].getY();
-									e_projectile_VX[free] = vx * 0.30;
-									e_projectile_VY[free] = vy * 0.30;
-									e_projectile_states[free] = 1;
+									eproj[free].setX(enemies2[i].getX());
+									eproj[free].setY(enemies2[i].getY());
+									eproj[free].setSpeedX(vx * 0.30);
+									eproj[free].setSpeedY(vy * 0.30);
+									eproj[free].setState(Entity.ACTIVE);
 								}
 							}
 						}
@@ -449,13 +447,8 @@ public class Stage{
 			
 			/* desenhando projeteis (inimigos) */
 		
-			for(int i = 0; i < e_projectile_states.length; i++){
-				
-				if(e_projectile_states[i] == ACTIVE){
-	
-					GameLib.setColor(Color.RED);
-					GameLib.drawCircle(e_projectile_X[i], e_projectile_Y[i], e_projectile_radius);
-				}
+			for(int i = 0; i < eproj.length; i++){
+				eproj[i].draw(currentTime);
 			}
 			
 			/* desenhando inimigos (tipo 1) */
