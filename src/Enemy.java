@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.util.*;
+
 
 public class Enemy extends Entity{	
 		private double v;
@@ -15,12 +17,18 @@ public class Enemy extends Entity{
 
 		private Player player;
 
+
+
+		private DecoratorEnemyFire proj;
+
+
 		public Enemy(double x,double y,Player player){
 			setX(x);
 			setY(y);
 			this.radius = 9;
 			initialize();
 			this.player = player;
+			proj   = new  DecoratorEnemyFire(new Projectile());
 
 		}
 
@@ -38,22 +46,67 @@ public class Enemy extends Entity{
 		public void update(long currentTime,long delta){
 
 			if(getState() == EXPLODING && isDoneExploding(currentTime)){		
-					setState(Entity.INACTIVE);
+				setState(Entity.INACTIVE);
 			}
+
+			if(getY() > GameLib.HEIGHT + 10) {
+						
+				setState(Entity.INACTIVE);
+				return;
+			}
+
+			if(getState() == ACTIVE){					
+
+				setX(getX() + getSpeed() * Math.cos(getAngle()) * delta);
+				setY(getY() + getSpeed() * Math.sin(getAngle()) * delta * (-1.0));
+				setAngle(getAngle() + getAngleV() * delta);
+
+				double dx = getX() - player.getX();
+				double dy = getY() - player.getY();
+				double dist = Math.sqrt(dx * dx + dy * dy);
+				
+				if(dist < (player.getRadius() + getRadius()) * 0.8  && player.getState() != EXPLODING){
+					
+					player.explode(currentTime);
+					explode(currentTime);
+					
+				}
+
+
+				if(canShoot(currentTime) && getY() < player.getY() && proj.getProj().getState() != ACTIVE){	
+					proj.setX(getX());
+					proj.setY(getY());
+					proj.setSpeedX(Math.cos(getAngle()) * 0.45);
+					proj.setSpeedY(Math.sin(getAngle()) * 0.45 * (-1.0));
+					proj.setState(Entity.ACTIVE);		
+					
+					setNextShot((long) (currentTime + 200 + Math.random() * 500));
+				}
+
+
+				
+
+			}
+			proj.update(player,currentTime,delta);
+			
 				
 
 		}
 
 		public void draw(long currentTime){
 			if(getState() == EXPLODING){
-					GameLib.drawExplosion(getX(), getY(), getAlpha(currentTime));
-				}
+				GameLib.setColor(Color.RED);
+				GameLib.drawExplosion(getX(), getY(), getAlpha(currentTime));
+			}
 				
-				if(getState() == ACTIVE){
-			
-					GameLib.setColor(Color.CYAN);
-					GameLib.drawCircle(getX(), getY(), getRadius());
-				}
+			if(getState() == ACTIVE){
+		
+				GameLib.setColor(Color.CYAN);
+				GameLib.drawCircle(getX(), getY(), getRadius());
+			}
+		
+	    	proj.draw(currentTime);
+	    	
 
 
 		}

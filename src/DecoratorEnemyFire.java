@@ -5,21 +5,36 @@ public class DecoratorEnemyFire extends Decorator{
 	
 	private Projectile p;
 
-	private Player player;
 
 
-	public DecoratorEnemyFire(Projectile p,Player player){
+	public DecoratorEnemyFire(Projectile p){
 		this.p = p;
-		this.player = player;
 	}
 
 	
-	public void update(long currentTime,long delta){
-		p.update(currentTime,delta);			
+	public void update(Player player,long currentTime,long delta){
+		
+		if(p.getState() == ACTIVE){
+		
+			System.out.println("POW");
+			p.update(currentTime,delta);
+
+			double dx = getProj().getX() - player.getX();
+			double dy = getProj().getY() - player.getY();
+			double dist = Math.sqrt(dx * dx + dy * dy);
+
+
+			if(dist < (player.getRadius() + getRadius()) * 0.8 && player.getState() != EXPLODING){
+				player.explode(currentTime);
+				p.setState(EXPLODING);
+			}
+		}
+
 	}
 
 	public void draw(long currentTime){
 		if(p.getState() == ACTIVE){	
+			p.draw(currentTime);
 			GameLib.setColor(Color.RED);
 			GameLib.drawCircle(p.getX(), p.getY(), getRadius());
 		}
@@ -45,10 +60,16 @@ public class DecoratorEnemyFire extends Decorator{
 
 
 	public void setSpeedX(double vx){
-		this.p.setSpeed(vx);
+		this.p.setSpeedX(vx);
 	}
 	public void setSpeedY(double vy){
 		this.p.setSpeedY(vy);
 	}
 
+	public void setX(double x){
+		this.p.setX(x);
+	}
+	public void setY(double y){
+		this.p.setY(y);
+	}
 }

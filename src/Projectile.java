@@ -7,6 +7,7 @@ public class Projectile extends Entity{
 	
 	private int state;
 
+
 	public Projectile(){
 		state = INACTIVE;
 		vy = -1;
@@ -15,8 +16,7 @@ public class Projectile extends Entity{
 	public void update(long currentTime,long delta){
 
 		if(getState() == ACTIVE){
-			
-					/* verificando se projétil saiu da tela */
+			/* verificando se projétil saiu da tela */
 			if(getY() < -2 || getY() > GameLib.HEIGHT + 20) {
 						
 				setState(INACTIVE);
@@ -27,6 +27,9 @@ public class Projectile extends Entity{
 				setY(getY() + getSpeedY() * delta);
 			}
 		}
+
+	
+
 
 	}
 
